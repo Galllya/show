@@ -24,6 +24,7 @@ class _HomeViewState extends State<HomeView> {
   bool emojiShowing = false;
   bool writingTeg = false;
   bool haveTextInMessage = false;
+  FocusNode focusNode = FocusNode();
 
   TextEditingController textEditingController = TextEditingController();
 
@@ -175,6 +176,7 @@ class _HomeViewState extends State<HomeView> {
                                   child: Stack(
                                     children: [
                                       TextField(
+                                        focusNode: focusNode,
                                         controller: textEditingController,
                                         style: AppTextStyles
                                             .w400S16H20WhiteWithOpacity,
@@ -211,12 +213,19 @@ class _HomeViewState extends State<HomeView> {
                                                 8, 5, 4, 10),
                                             child: InkWell(
                                               onTap: () {
-                                                print('popopo');
                                                 setState(() {
                                                   writingTeg = !writingTeg;
+                                                  focusNode.requestFocus();
                                                 });
                                                 textEditingController.text =
                                                     "# ${textEditingController.text} ";
+                                                textEditingController
+                                                        .selection =
+                                                    TextSelection.fromPosition(
+                                                  const TextPosition(
+                                                    offset: 1,
+                                                  ),
+                                                );
                                               },
                                               child: DecoratedBox(
                                                 decoration: BoxDecoration(
