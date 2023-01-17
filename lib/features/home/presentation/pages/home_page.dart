@@ -32,6 +32,7 @@ class _HomePageState extends State<HomePage> {
       value: homeBloc,
       child: Scaffold(
         appBar: AppBar(
+          centerTitle: true,
           title: const Image(
             image: AssetImage(
               Images.logo,

@@ -19,19 +19,19 @@ mixin _$HomeEvent {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(String message) addMessage,
+    required TResult Function(MessageModel message) addMessage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(String message)? addMessage,
+    TResult? Function(MessageModel message)? addMessage,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(String message)? addMessage,
+    TResult Function(MessageModel message)? addMessage,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -111,7 +111,7 @@ class _$_Started implements _Started {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(String message) addMessage,
+    required TResult Function(MessageModel message) addMessage,
   }) {
     return started();
   }
@@ -120,7 +120,7 @@ class _$_Started implements _Started {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(String message)? addMessage,
+    TResult? Function(MessageModel message)? addMessage,
   }) {
     return started?.call();
   }
@@ -129,7 +129,7 @@ class _$_Started implements _Started {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(String message)? addMessage,
+    TResult Function(MessageModel message)? addMessage,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -180,7 +180,7 @@ abstract class _$$_AddMessageCopyWith<$Res> {
           _$_AddMessage value, $Res Function(_$_AddMessage) then) =
       __$$_AddMessageCopyWithImpl<$Res>;
   @useResult
-  $Res call({String message});
+  $Res call({MessageModel message});
 }
 
 /// @nodoc
@@ -200,7 +200,7 @@ class __$$_AddMessageCopyWithImpl<$Res>
       null == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
-              as String,
+              as MessageModel,
     ));
   }
 }
@@ -211,7 +211,7 @@ class _$_AddMessage implements _AddMessage {
   const _$_AddMessage(this.message);
 
   @override
-  final String message;
+  final MessageModel message;
 
   @override
   String toString() {
@@ -239,7 +239,7 @@ class _$_AddMessage implements _AddMessage {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
-    required TResult Function(String message) addMessage,
+    required TResult Function(MessageModel message) addMessage,
   }) {
     return addMessage(message);
   }
@@ -248,7 +248,7 @@ class _$_AddMessage implements _AddMessage {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
-    TResult? Function(String message)? addMessage,
+    TResult? Function(MessageModel message)? addMessage,
   }) {
     return addMessage?.call(message);
   }
@@ -257,7 +257,7 @@ class _$_AddMessage implements _AddMessage {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
-    TResult Function(String message)? addMessage,
+    TResult Function(MessageModel message)? addMessage,
     required TResult orElse(),
   }) {
     if (addMessage != null) {
@@ -299,9 +299,9 @@ class _$_AddMessage implements _AddMessage {
 }
 
 abstract class _AddMessage implements HomeEvent {
-  const factory _AddMessage(final String message) = _$_AddMessage;
+  const factory _AddMessage(final MessageModel message) = _$_AddMessage;
 
-  String get message;
+  MessageModel get message;
   @JsonKey(ignore: true)
   _$$_AddMessageCopyWith<_$_AddMessage> get copyWith =>
       throw _privateConstructorUsedError;
@@ -312,19 +312,19 @@ mixin _$HomeState {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(List<String> messages) loaded,
+    required TResult Function(List<MessageModel> messages) loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(List<String> messages)? loaded,
+    TResult? Function(List<MessageModel> messages)? loaded,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(List<String> messages)? loaded,
+    TResult Function(List<MessageModel> messages)? loaded,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -404,7 +404,7 @@ class _$_Initial implements _Initial {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(List<String> messages) loaded,
+    required TResult Function(List<MessageModel> messages) loaded,
   }) {
     return initial();
   }
@@ -413,7 +413,7 @@ class _$_Initial implements _Initial {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(List<String> messages)? loaded,
+    TResult? Function(List<MessageModel> messages)? loaded,
   }) {
     return initial?.call();
   }
@@ -422,7 +422,7 @@ class _$_Initial implements _Initial {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(List<String> messages)? loaded,
+    TResult Function(List<MessageModel> messages)? loaded,
     required TResult orElse(),
   }) {
     if (initial != null) {
@@ -472,7 +472,7 @@ abstract class _$$_LoadedCopyWith<$Res> {
   factory _$$_LoadedCopyWith(_$_Loaded value, $Res Function(_$_Loaded) then) =
       __$$_LoadedCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<String> messages});
+  $Res call({List<MessageModel> messages});
 }
 
 /// @nodoc
@@ -491,7 +491,7 @@ class __$$_LoadedCopyWithImpl<$Res>
       messages: null == messages
           ? _value._messages
           : messages // ignore: cast_nullable_to_non_nullable
-              as List<String>,
+              as List<MessageModel>,
     ));
   }
 }
@@ -499,12 +499,12 @@ class __$$_LoadedCopyWithImpl<$Res>
 /// @nodoc
 
 class _$_Loaded implements _Loaded {
-  const _$_Loaded({required final List<String> messages})
+  const _$_Loaded({required final List<MessageModel> messages})
       : _messages = messages;
 
-  final List<String> _messages;
+  final List<MessageModel> _messages;
   @override
-  List<String> get messages {
+  List<MessageModel> get messages {
     if (_messages is EqualUnmodifiableListView) return _messages;
     // ignore: implicit_dynamic_type
     return EqualUnmodifiableListView(_messages);
@@ -537,7 +537,7 @@ class _$_Loaded implements _Loaded {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
-    required TResult Function(List<String> messages) loaded,
+    required TResult Function(List<MessageModel> messages) loaded,
   }) {
     return loaded(messages);
   }
@@ -546,7 +546,7 @@ class _$_Loaded implements _Loaded {
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
-    TResult? Function(List<String> messages)? loaded,
+    TResult? Function(List<MessageModel> messages)? loaded,
   }) {
     return loaded?.call(messages);
   }
@@ -555,7 +555,7 @@ class _$_Loaded implements _Loaded {
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
-    TResult Function(List<String> messages)? loaded,
+    TResult Function(List<MessageModel> messages)? loaded,
     required TResult orElse(),
   }) {
     if (loaded != null) {
@@ -597,9 +597,10 @@ class _$_Loaded implements _Loaded {
 }
 
 abstract class _Loaded implements HomeState {
-  const factory _Loaded({required final List<String> messages}) = _$_Loaded;
+  const factory _Loaded({required final List<MessageModel> messages}) =
+      _$_Loaded;
 
-  List<String> get messages;
+  List<MessageModel> get messages;
   @JsonKey(ignore: true)
   _$$_LoadedCopyWith<_$_Loaded> get copyWith =>
       throw _privateConstructorUsedError;

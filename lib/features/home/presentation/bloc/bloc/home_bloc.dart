@@ -1,5 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:slow/features/home/domain/message_model.dart';
 
 part 'home_event.dart';
 part 'home_state.dart';
@@ -23,10 +24,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     );
   }
 
-  Stream<HomeState> _addMessage(String message) async* {
+  Stream<HomeState> _addMessage(MessageModel message) async* {
     yield* state.maybeMap(
       loaded: (loadedState) async* {
-        List<String> newMessages = [];
+        List<MessageModel> newMessages = [];
         newMessages.addAll(loadedState.messages);
         newMessages.add(message);
         print(newMessages);
