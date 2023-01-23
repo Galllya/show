@@ -16,6 +16,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late HomeBloc homeBloc;
+
   @override
   void initState() {
     homeBloc = HomeBloc()

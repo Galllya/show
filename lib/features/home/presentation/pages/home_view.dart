@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -9,11 +10,13 @@ import 'package:keyboard_visibility_pro/keyboard_visibility_pro.dart';
 import 'package:slow/features/home/domain/message_model.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
 import 'package:slow/features/home/presentation/bloc/bloc/home_bloc.dart';
+import 'package:slow/features/home/presentation/widgets/emoji_picker_custom.dart';
+import 'package:slow/features/home/presentation/widgets/files_list.dart';
+import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
 import 'package:slow/features/home/presentation/widgets/tags_list.dart';
 import 'package:slow/resources/resources.dart';
 import 'package:slow/themes/colors.dart';
 import 'package:slow/themes/text_style.dart';
-import 'package:path/path.dart' as p;
 
 class HomeView extends StatefulWidget {
   final Function(MessageModel message) addMessageEvent;
@@ -43,6 +46,25 @@ class _HomeViewState extends State<HomeView> {
     Color(0xFF009688),
   ];
 
+  List<TagModel> tagsInSelect = [
+    TagModel(
+      title: '# kontrasocial',
+      hexColor: const Color(0xff2400FF).value,
+    ),
+    TagModel(
+      title: '# beplalogi',
+      hexColor: const Color(0xffFF0000).value,
+    ),
+    TagModel(
+      title: '# ipsum',
+      hexColor: const Color(0xff00C2FF).value,
+    ),
+    TagModel(
+      title: '# lorem',
+      hexColor: const Color(0xff00FF38).value,
+    ),
+  ];
+
   List<TagModel> tags = [];
 
   FocusNode focusNode = FocusNode();
@@ -51,21 +73,25 @@ class _HomeViewState extends State<HomeView> {
 
   TextEditingController textEditingController = TextEditingController();
 
+  bool showListDropDown = false;
   void addMessage(String message) {
     if (writingTeg) {
       closeTag();
     }
-    MessageModel messageModel = MessageModel(
-      title: message,
-      tags: tags,
-      filePaths: filePaths,
-    );
-    widget.addMessageEvent(messageModel);
+    if (textEditingController.text.isNotEmpty || filePaths.isNotEmpty) {
+      MessageModel messageModel = MessageModel(
+        title: textEditingController.text,
+        tags: tags,
+        filePaths: filePaths,
+      );
+      widget.addMessageEvent(messageModel);
+    }
     setState(() {
       tags = [];
       filePaths = [];
     });
     textEditingController.text = '';
+    scrollToBegin();
   }
 
   _onEmojiSelected(Emoji emoji) {
@@ -88,7 +114,9 @@ class _HomeViewState extends State<HomeView> {
   }
 
   int numbersOffAddedCharacters = 0;
-
+  ScrollController scrollController = ScrollController();
+  bool showScrollToBeginButton = false;
+  bool makeScroll = false;
   @override
   void initState() {
     textEditingController.addListener(
@@ -109,6 +137,19 @@ class _HomeViewState extends State<HomeView> {
         }
       },
     );
+    scrollController.addListener(
+      () {
+        if (scrollController.offset > 200) {
+          setState(() {
+            showScrollToBeginButton = true;
+          });
+        } else {
+          setState(() {
+            showScrollToBeginButton = false;
+          });
+        }
+      },
+    );
 
     super.initState();
   }
@@ -125,6 +166,15 @@ class _HomeViewState extends State<HomeView> {
         closeTag();
       }
     }
+  }
+
+  void addTagFromDropDown(TagModel selectTag) {
+    tags.add(
+      selectTag,
+    );
+    setState(() {
+      showListDropDown = false;
+    });
   }
 
   void closeTag() {
@@ -167,7 +217,16 @@ class _HomeViewState extends State<HomeView> {
         );
       }
       filePaths.addAll(paths);
+      setState(() {});
     } else {}
+  }
+
+  scrollToBegin() {
+    scrollController.animateTo(
+      0,
+      duration: const Duration(microseconds: 500),
+      curve: Curves.ease,
+    );
   }
 
   @override
@@ -211,6 +270,7 @@ class _HomeViewState extends State<HomeView> {
                           child: ListView(
                             reverse: true,
                             padding: const EdgeInsets.all(0),
+                            controller: scrollController,
                             children: [
                               for (MessageModel message in messages.reversed)
                                 Stack(
@@ -251,43 +311,11 @@ class _HomeViewState extends State<HomeView> {
                                                     children: [
                                                       TagsList(
                                                           tags: message.tags),
-                                                      if (message
-                                                          .filePaths.isNotEmpty)
-                                                        Row(
-                                                          children: [
-                                                            for (String path
-                                                                in message
-                                                                    .filePaths)
-                                                              if (p.extension(
-                                                                        path,
-                                                                      ) ==
-                                                                      '.jpg' ||
-                                                                  p.extension(
-                                                                        path,
-                                                                      ) ==
-                                                                      '.png' ||
-                                                                  p.extension(
-                                                                        path,
-                                                                      ) ==
-                                                                      '.jpeg')
-                                                                ConstrainedBox(
-                                                                  constraints:
-                                                                      const BoxConstraints(
-                                                                    maxHeight:
-                                                                        200,
-                                                                    maxWidth:
-                                                                        100,
-                                                                  ),
-                                                                  child: Image
-                                                                      .file(
-                                                                    File(path),
-                                                                    fit: BoxFit
-                                                                        .fill,
-                                                                    scale: 5,
-                                                                  ),
-                                                                ),
-                                                          ],
-                                                        ),
+                                                      const SizedBox(
+                                                        height: 4,
+                                                      ),
+                                                      FilesList(
+                                                          message: message),
                                                       Text(
                                                         message.title,
                                                         style: AppTextStyles
@@ -321,6 +349,22 @@ class _HomeViewState extends State<HomeView> {
                             ),
                             child: TagsList(
                               tags: tags,
+                            ),
+                          ),
+                        if (filePaths.isNotEmpty)
+                          SizedBox(
+                            width: double.infinity,
+                            child: DecoratedBox(
+                              decoration: const BoxDecoration(
+                                color: AppColors.primary,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(4),
+                                child: Text(
+                                  'you add ${filePaths.length} files',
+                                  style: AppTextStyles.w400S16H20White,
+                                ),
+                              ),
                             ),
                           ),
                         ColoredBox(
@@ -392,6 +436,11 @@ class _HomeViewState extends State<HomeView> {
                                                   const EdgeInsets.fromLTRB(
                                                       8, 5, 4, 10),
                                               child: InkWell(
+                                                onLongPress: () {
+                                                  setState(() {
+                                                    showListDropDown = true;
+                                                  });
+                                                },
                                                 onTap: () {
                                                   if (!writingTeg) {
                                                     setState(() {
@@ -524,45 +573,106 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                         ),
-                        Offstage(
-                          offstage: !(isEmojiVisible && isEmojiVisibleNow),
-                          child: SizedBox(
-                            height: PersistentKeyboardHeight.of(context)
-                                .keyboardHeight,
-                            child: isEmojiVisible
-                                ? EmojiPicker(
-                                    onEmojiSelected:
-                                        (Category? category, Emoji emoji) {
-                                      _onEmojiSelected(emoji);
-                                    },
-                                    onBackspacePressed: _onBackspacePressed,
-                                    config: Config(
-                                      columns: 7,
-                                      emojiSizeMax:
-                                          32 * (Platform.isIOS ? 1.30 : 1.0),
-                                      verticalSpacing: 0,
-                                      horizontalSpacing: 0,
-                                      initCategory: Category.RECENT,
-                                      bgColor: AppColors.primary,
-                                      indicatorColor: Colors.white,
-                                      iconColor: Colors.grey,
-                                      iconColorSelected: Colors.white,
-                                      backspaceColor: Colors.white,
-                                      showRecentsTab: true,
-                                      recentsLimit: 28,
-                                      tabIndicatorAnimDuration:
-                                          kTabScrollDuration,
-                                      categoryIcons: const CategoryIcons(),
-                                      buttonMode: ButtonMode.MATERIAL,
-                                    ),
-                                  )
-                                : const ColoredBox(
-                                    color: AppColors.primary,
-                                  ),
-                          ),
-                        ),
+                        EmojiPickerCustom(
+                          isEmojiVisible: isEmojiVisible,
+                          isEmojiVisibleNow: isEmojiVisibleNow,
+                          onBackspacePressed: _onBackspacePressed,
+                          onEmojiSelected: _onEmojiSelected,
+                        )
                       ],
                     ),
+                    if (showScrollToBeginButton)
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: isKeyboardVisible
+                                ? 80
+                                : isEmojiVisible
+                                    ? PersistentKeyboardHeight.of(context)
+                                            .keyboardHeight +
+                                        80
+                                    : 100,
+                            right: 10,
+                          ),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(100),
+                            onTap: () {
+                              scrollToBegin();
+                            },
+                            child: const CircleAvatar(
+                              backgroundColor: AppColors.primaryDark,
+                              radius: 20,
+                              child: Icon(
+                                Icons.arrow_drop_down,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    if (showListDropDown)
+                      Align(
+                        alignment: Alignment.bottomLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(
+                            bottom: isKeyboardVisible
+                                ? 0
+                                : isEmojiVisible
+                                    ? PersistentKeyboardHeight.of(context)
+                                        .keyboardHeight
+                                    : 40,
+                            left: 60,
+                          ),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(
+                                15,
+                              ),
+                              color: AppColors.lightGrey,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      for (var tag in tagsInSelect)
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 3),
+                                          child: Row(
+                                            children: [
+                                              InkWell(
+                                                onTap: () {
+                                                  addTagFromDropDown(tag);
+                                                },
+                                                child: TagCustom(
+                                                  tag: tag,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      Text(
+                                        '#',
+                                        style: AppTextStyles.w400S18H22White,
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),

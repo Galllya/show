@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
+import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
 import 'package:slow/themes/text_style.dart';
 
 class TagsList extends StatelessWidget {
@@ -18,27 +19,9 @@ class TagsList extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               children: [
                 for (TagModel tagCurrent in tags)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 4),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(6),
-                        color: Color(
-                          tagCurrent.hexColor,
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Center(
-                          child: Text(
-                            tagCurrent.title,
-                            textAlign: TextAlign.center,
-                            style: AppTextStyles.w400S18H22White,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  TagCustom(
+                    tag: tagCurrent,
+                  )
               ],
             ),
           )

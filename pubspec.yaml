@@ -30,6 +30,12 @@ dependencies:
   flutter_persistent_keyboard_height: ^1.0.5
   file_picker: ^5.2.5
   better_open_file: ^3.6.4
+  photo_view: ^0.14.0
+  video_player: ^2.5.1
+  audioplayers: ^2.0.0
+  audio_waveforms: ^1.0.1
+  bubble: ^1.2.1
+  dropdown_button2: ^1.9.2
 
 dev_dependencies:
   flutter_test:
