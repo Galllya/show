@@ -10,8 +10,14 @@ import 'package:keyboard_visibility_pro/keyboard_visibility_pro.dart';
 import 'package:slow/features/home/domain/message_model.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
 import 'package:slow/features/home/presentation/bloc/bloc/home_bloc.dart';
+import 'package:slow/features/home/presentation/widgets/add_files_strip.dart';
+import 'package:slow/features/home/presentation/widgets/background_image.dart';
+import 'package:slow/features/home/presentation/widgets/bottom_row/bottom_row.dart';
 import 'package:slow/features/home/presentation/widgets/emoji_picker_custom.dart';
 import 'package:slow/features/home/presentation/widgets/files_list.dart';
+import 'package:slow/features/home/presentation/widgets/bottom_row/list_drop_down.dart';
+import 'package:slow/features/home/presentation/widgets/message_container.dart';
+import 'package:slow/features/home/presentation/widgets/scroll_to_begin_button.dart';
 import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
 import 'package:slow/features/home/presentation/widgets/tags_list.dart';
 import 'package:slow/resources/resources.dart';
@@ -32,9 +38,10 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   bool isEmojiVisible = false;
   bool isKeyboardVisible = false;
-  bool writingTeg = false;
+  bool isTagWritting = false;
   bool haveTextInMessage = false;
-  bool isEmojiVisibleNow = false;
+  bool showListDropDown = false;
+  ScrollController scrollController = ScrollController();
 
   List<Color> colorsList = const [
     Color(0xFF4CAF50),
@@ -73,9 +80,8 @@ class _HomeViewState extends State<HomeView> {
 
   TextEditingController textEditingController = TextEditingController();
 
-  bool showListDropDown = false;
   void addMessage(String message) {
-    if (writingTeg) {
+    if (isTagWritting) {
       closeTag();
     }
     if (textEditingController.text.isNotEmpty || filePaths.isNotEmpty) {
@@ -114,58 +120,79 @@ class _HomeViewState extends State<HomeView> {
   }
 
   int numbersOffAddedCharacters = 0;
-  ScrollController scrollController = ScrollController();
   bool showScrollToBeginButton = false;
-  bool makeScroll = false;
   @override
   void initState() {
     textEditingController.addListener(
       () {
-        if (writingTeg) {
+        if (isTagWritting) {
           createTag();
         } else {
           numbersOffAddedCharacters = textEditingController.text.length;
         }
-        if (textEditingController.text.isNotEmpty) {
-          setState(() {
+        setState(() {
+          if (textEditingController.text.isNotEmpty) {
             haveTextInMessage = true;
-          });
-        } else {
-          setState(() {
+          } else {
             haveTextInMessage = false;
-          });
-        }
+          }
+        });
       },
     );
     scrollController.addListener(
       () {
-        if (scrollController.offset > 200) {
-          setState(() {
+        setState(() {
+          if (scrollController.offset > 200) {
             showScrollToBeginButton = true;
-          });
-        } else {
-          setState(() {
+          } else {
             showScrollToBeginButton = false;
-          });
-        }
+          }
+        });
       },
     );
-
     super.initState();
   }
 
   void createTag() {
     if (textEditingController.text.isNotEmpty) {
       int len = 0;
-      if (textEditingController.text.length - numbersOffAddedCharacters > 3) {
-        len = textEditingController.text.length - numbersOffAddedCharacters - 3;
+      int textLength = textEditingController.text.length;
+      if (textLength - numbersOffAddedCharacters > 3) {
+        len = textLength - numbersOffAddedCharacters - 3;
       }
       final unitsCode = textEditingController.text[len].codeUnits;
-
-      if ((unitsCode.first == 10 || unitsCode.first == 32) && len != 0) {
+      int lastCharacterUniCode = unitsCode.first;
+      if ((lastCharacterUniCode == 10 || lastCharacterUniCode == 32) &&
+          len != 0) {
         closeTag();
       }
     }
+  }
+
+  void closeTag() {
+    isTagWritting = false;
+    int endTagPosition =
+        textEditingController.text.length - numbersOffAddedCharacters;
+    tags.add(
+      TagModel(
+        title:
+            '# ${textEditingController.text.substring(0, endTagPosition - 3)}',
+        hexColor: colorsList[Random().nextInt(
+          colorsList.length,
+        )]
+            .value,
+      ),
+    );
+    textEditingController.text = textEditingController.text.substring(
+      textEditingController.text.substring(0, endTagPosition).length,
+    );
+
+    textEditingController.selection = TextSelection.fromPosition(
+      TextPosition(
+        offset: textEditingController.text.length,
+      ),
+    );
+    numbersOffAddedCharacters = 0;
   }
 
   void addTagFromDropDown(TagModel selectTag) {
@@ -177,40 +204,12 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  void closeTag() {
-    writingTeg = false;
-
-    tags.add(
-      TagModel(
-        title:
-            '# ${textEditingController.text.substring(0, textEditingController.text.length - numbersOffAddedCharacters - 3)}',
-        hexColor: colorsList[Random().nextInt(
-          colorsList.length,
-        )]
-            .value,
-      ),
-    );
-    textEditingController.text = textEditingController.text.substring(
-        textEditingController.text
-            .substring(0,
-                textEditingController.text.length - numbersOffAddedCharacters)
-            .length);
-
-    textEditingController.selection = TextSelection.fromPosition(
-      TextPosition(
-        offset: textEditingController.text.length,
-      ),
-    );
-    numbersOffAddedCharacters = 0;
-  }
-
-  Future<void> pickFile() async {
+  pickFile() async {
     FilePickerResult? result =
         await FilePicker.platform.pickFiles(allowMultiple: true);
 
     if (result != null) {
       List<String> paths = [];
-
       for (var element in result.paths) {
         paths.add(
           element!,
@@ -255,14 +254,7 @@ class _HomeViewState extends State<HomeView> {
                 },
                 child: Stack(
                   children: [
-                    SizedBox(
-                      height: double.infinity,
-                      width: double.infinity,
-                      child: Image.asset(
-                        Images.bgPattern,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    const BackgroundImage(),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -273,70 +265,8 @@ class _HomeViewState extends State<HomeView> {
                             controller: scrollController,
                             children: [
                               for (MessageModel message in messages.reversed)
-                                Stack(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(
-                                        left: 60,
-                                        right: 10,
-                                        bottom: 10,
-                                      ),
-                                      child: Stack(
-                                        alignment:
-                                            AlignmentDirectional.bottomStart,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(
-                                                bottom: 10),
-                                            child: Align(
-                                              alignment: Alignment.topRight,
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  color: AppColors.baseGrey,
-                                                  borderRadius:
-                                                      BorderRadius.circular(
-                                                    15,
-                                                  ),
-                                                ),
-                                                child: Padding(
-                                                  padding: const EdgeInsets
-                                                      .symmetric(
-                                                    vertical: 5,
-                                                    horizontal: 10,
-                                                  ),
-                                                  child: Column(
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .start,
-                                                    children: [
-                                                      TagsList(
-                                                          tags: message.tags),
-                                                      const SizedBox(
-                                                        height: 4,
-                                                      ),
-                                                      FilesList(
-                                                          message: message),
-                                                      Text(
-                                                        message.title,
-                                                        style: AppTextStyles
-                                                            .w400S18H22White,
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Align(
-                                            alignment: Alignment.bottomRight,
-                                            child: Image.asset(
-                                              Images.dialogPart,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
+                                MessageContainer(
+                                  message: message,
                                 ),
                             ],
                           ),
@@ -352,326 +282,83 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                         if (filePaths.isNotEmpty)
-                          SizedBox(
-                            width: double.infinity,
-                            child: DecoratedBox(
-                              decoration: const BoxDecoration(
-                                color: AppColors.primary,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: Text(
-                                  'you add ${filePaths.length} files',
-                                  style: AppTextStyles.w400S16H20White,
-                                ),
-                              ),
-                            ),
+                          AddFilesStrip(
+                            filesLen: filePaths.length,
                           ),
-                        ColoredBox(
-                          color: AppColors.primary,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              10,
-                              5,
-                              10,
-                              isEmojiVisible || isKeyboardVisible ? 0 : 40,
-                            ),
-                            child: Column(
-                              children: [
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        pickFile();
-                                      },
-                                      icon: const Icon(
-                                        Icons.add,
-                                        color: AppColors.items,
-                                        size: 25,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    Expanded(
-                                      child: Stack(
-                                        children: [
-                                          TextField(
-                                            keyboardAppearance: Brightness.dark,
-                                            focusNode: focusNode,
-                                            controller: textEditingController,
-                                            style:
-                                                AppTextStyles.w400S16H20White,
-                                            maxLines: 5,
-                                            minLines: 1,
-                                            decoration: InputDecoration(
-                                              contentPadding:
-                                                  const EdgeInsets.only(
-                                                right: 40,
-                                                left: 40,
-                                                top: 12,
-                                                bottom: 12,
-                                              ),
-                                              labelText: 'Message',
-                                              labelStyle: AppTextStyles
-                                                  .w400S16H20WhiteWithOpacity,
-                                              floatingLabelBehavior:
-                                                  FloatingLabelBehavior.never,
-                                              filled: true,
-                                              fillColor: AppColors.primaryDark,
-                                              border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                                borderSide: BorderSide.none,
-                                              ),
-                                              isDense: true,
-                                            ),
-                                          ),
-                                          Positioned(
-                                            left: 0,
-                                            bottom: 0,
-                                            child: Padding(
-                                              padding:
-                                                  const EdgeInsets.fromLTRB(
-                                                      8, 5, 4, 10),
-                                              child: InkWell(
-                                                onLongPress: () {
-                                                  setState(() {
-                                                    showListDropDown = true;
-                                                  });
-                                                },
-                                                onTap: () {
-                                                  if (!writingTeg) {
-                                                    setState(() {
-                                                      writingTeg = !writingTeg;
-                                                      focusNode.requestFocus();
-                                                      isEmojiVisible = false;
-                                                      isEmojiVisibleNow = false;
-                                                    });
-                                                    textEditingController.text =
-                                                        "  ${textEditingController.text}";
-                                                    textEditingController
-                                                            .selection =
-                                                        TextSelection
-                                                            .fromPosition(
-                                                      const TextPosition(
-                                                        offset: 0,
-                                                      ),
-                                                    );
-                                                  }
-                                                },
-                                                child: DecoratedBox(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            6),
-                                                    color: writingTeg
-                                                        ? AppColors.primaryDark
-                                                        : AppColors.baseGrey,
-                                                  ),
-                                                  child: const Icon(
-                                                    Icons.tag,
-                                                    color: Colors.white,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          Positioned(
-                                            right: 0,
-                                            bottom: 0,
-                                            child: isEmojiVisible &&
-                                                    !isKeyboardVisible
-                                                ? IconButton(
-                                                    onPressed: () {
-                                                      FocusScope.of(context)
-                                                          .requestFocus(
-                                                              focusNode);
-                                                      setState(() {
-                                                        isKeyboardVisible =
-                                                            true;
-                                                      });
-                                                      setState(() {
-                                                        isEmojiVisible =
-                                                            !isEmojiVisible;
-                                                        Future.delayed(
-                                                            const Duration(
-                                                                milliseconds:
-                                                                    500), () {
-                                                          setState(() {
-                                                            isEmojiVisibleNow =
-                                                                isEmojiVisible;
-                                                          });
-                                                        });
-                                                      });
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.keyboard,
-                                                      size: 21,
-                                                      color: AppColors.items,
-                                                    ),
-                                                  )
-                                                : IconButton(
-                                                    onPressed: () {
-                                                      FocusScope.of(context)
-                                                          .unfocus();
-                                                      setState(() {
-                                                        isKeyboardVisible =
-                                                            false;
-                                                      });
-                                                      setState(() {
-                                                        isEmojiVisible =
-                                                            !isEmojiVisible;
-                                                      });
-                                                      Future.delayed(
-                                                          const Duration(
-                                                              milliseconds:
-                                                                  500), () {
-                                                        setState(() {
-                                                          isEmojiVisibleNow =
-                                                              isEmojiVisible;
-                                                        });
-                                                      });
-                                                    },
-                                                    icon: const Icon(
-                                                      Icons.emoji_emotions,
-                                                      size: 21,
-                                                      color: AppColors.items,
-                                                    ),
-                                                  ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 5,
-                                    ),
-                                    haveTextInMessage || filePaths.isNotEmpty
-                                        ? IconButton(
-                                            onPressed: () {
-                                              addMessage(
-                                                textEditingController.text,
-                                              );
-                                            },
-                                            icon: const Icon(
-                                              Icons.send,
-                                              color: AppColors.items,
-                                            ),
-                                          )
-                                        : IconButton(
-                                            onPressed: () {},
-                                            icon: const Icon(
-                                              Icons.mic,
-                                              color: AppColors.items,
-                                              size: 25,
-                                            ),
-                                          )
-                                  ],
+                        BottomRow(
+                          pickFile: pickFile,
+                          focusNode: focusNode,
+                          textEditingController: textEditingController,
+                          onLongTagPress: () => setState(() {
+                            showListDropDown = true;
+                          }),
+                          onTagTap: () {
+                            if (!isTagWritting) {
+                              setState(() {
+                                isTagWritting = !isTagWritting;
+                                focusNode.requestFocus();
+                                isEmojiVisible = false;
+                              });
+                              textEditingController.text =
+                                  "  ${textEditingController.text}";
+                              textEditingController.selection =
+                                  TextSelection.fromPosition(
+                                const TextPosition(
+                                  offset: 0,
                                 ),
-                              ],
-                            ),
+                              );
+                            }
+                          },
+                          isTagWritting: isTagWritting,
+                          isEmojiVisible: isEmojiVisible,
+                          isKeyboardVisible: isKeyboardVisible,
+                          onKeyboardTap: () {
+                            FocusScope.of(context).requestFocus(focusNode);
+                            setState(() {
+                              isKeyboardVisible = true;
+                              isEmojiVisible = false;
+                            });
+                          },
+                          onEmojiTap: () {
+                            FocusScope.of(context).unfocus();
+                            setState(() {
+                              isKeyboardVisible = false;
+                            });
+                            Future.delayed(const Duration(milliseconds: 500),
+                                () {
+                              setState(() {
+                                isEmojiVisible = true;
+                              });
+                            });
+                          },
+                          showSend: haveTextInMessage || filePaths.isNotEmpty,
+                          onSendTap: () => addMessage(
+                            textEditingController.text,
                           ),
                         ),
                         EmojiPickerCustom(
                           isEmojiVisible: isEmojiVisible,
-                          isEmojiVisibleNow: isEmojiVisibleNow,
                           onBackspacePressed: _onBackspacePressed,
                           onEmojiSelected: _onEmojiSelected,
                         )
                       ],
                     ),
                     if (showScrollToBeginButton)
-                      Align(
-                        alignment: Alignment.bottomRight,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            bottom: isKeyboardVisible
-                                ? 80
-                                : isEmojiVisible
-                                    ? PersistentKeyboardHeight.of(context)
-                                            .keyboardHeight +
-                                        80
-                                    : 100,
-                            right: 10,
-                          ),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(100),
-                            onTap: () {
-                              scrollToBegin();
-                            },
-                            child: const CircleAvatar(
-                              backgroundColor: AppColors.primaryDark,
-                              radius: 20,
-                              child: Icon(
-                                Icons.arrow_drop_down,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ),
+                      ScrollToBeginButton(
+                        scrollToBegin: () {
+                          scrollToBegin();
+                        },
+                        isEmojiVisible: isEmojiVisible,
+                        isKeyboardVisible: isKeyboardVisible,
                       ),
                     if (showListDropDown)
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: EdgeInsets.only(
-                            bottom: isKeyboardVisible
-                                ? 0
-                                : isEmojiVisible
-                                    ? PersistentKeyboardHeight.of(context)
-                                        .keyboardHeight
-                                    : 40,
-                            left: 60,
-                          ),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(
-                                15,
-                              ),
-                              color: AppColors.lightGrey,
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                                vertical: 5,
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      for (var tag in tagsInSelect)
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(bottom: 3),
-                                          child: Row(
-                                            children: [
-                                              InkWell(
-                                                onTap: () {
-                                                  addTagFromDropDown(tag);
-                                                },
-                                                child: TagCustom(
-                                                  tag: tag,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      Text(
-                                        '#',
-                                        style: AppTextStyles.w400S18H22White,
-                                      )
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
+                      ListDropDown(
+                        isEmojiVisible: isEmojiVisible,
+                        isKeyboardVisible: isKeyboardVisible,
+                        tagsInSelect: tagsInSelect,
+                        onTagSelect: (TagModel tag) {
+                          addTagFromDropDown(tag);
+                        },
                       ),
                   ],
                 ),

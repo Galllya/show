@@ -7,13 +7,11 @@ import 'package:slow/themes/colors.dart';
 
 class EmojiPickerCustom extends StatelessWidget {
   final bool isEmojiVisible;
-  final bool isEmojiVisibleNow;
   final Function(Emoji emoji) onEmojiSelected;
   final VoidCallback onBackspacePressed;
   const EmojiPickerCustom({
     super.key,
     required this.isEmojiVisible,
-    required this.isEmojiVisibleNow,
     required this.onBackspacePressed,
     required this.onEmojiSelected,
   });
@@ -21,7 +19,7 @@ class EmojiPickerCustom extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Offstage(
-      offstage: !(isEmojiVisible && isEmojiVisibleNow),
+      offstage: !(isEmojiVisible),
       child: SizedBox(
         height: PersistentKeyboardHeight.of(context).keyboardHeight,
         child: isEmojiVisible
