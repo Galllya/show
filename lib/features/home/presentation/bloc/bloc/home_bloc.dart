@@ -10,32 +10,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   HomeBloc()
       : super(
           const _Initial(),
-        );
+        ) {
+    on<_Started>(_started);
+    on<_AddMessage>(_addMessage);
+  }
 
-  @override
-  Stream<HomeState> mapEventToState(
-    HomeEvent event,
-  ) =>
-      event.when(started: _started, addMessage: _addMessage);
-
-  Stream<HomeState> _started() async* {
-    yield const HomeState.loaded(
-      messages: [],
+  _started(
+    _Started event,
+    Emitter<HomeState> emit,
+  ) async {
+    emit(
+      const HomeState.loaded(
+        messages: [],
+      ),
     );
   }
 
-  Stream<HomeState> _addMessage(MessageModel message) async* {
-    yield* state.maybeMap(
-      loaded: (loadedState) async* {
-        List<MessageModel> newMessages = [];
-        newMessages.addAll(loadedState.messages);
-        newMessages.add(message);
-        print(newMessages);
-        yield HomeState.loaded(
+  _addMessage(
+    _AddMessage event,
+    Emitter<HomeState> emit,
+  ) async {
+    final state = this.state;
+    if (state is _Loaded) {
+      List<MessageModel> newMessages = [];
+      newMessages.addAll(state.messages);
+      newMessages.add(event.message);
+      emit(
+        HomeState.loaded(
           messages: newMessages,
-        );
-      },
-      orElse: () => Stream.value(state),
-    );
+        ),
+      );
+    }
   }
 }
