@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_persistent_keyboard_height/flutter_persistent_keyboard_height.dart';
-import 'package:slow/features/home/presentation/pages/home_page.dart';
 import 'package:slow/themes/app_theme.dart';
+
+import 'features/home/presentation/home/pages/home_page.dart';
 
 void main() {
   runApp(const MyApp());

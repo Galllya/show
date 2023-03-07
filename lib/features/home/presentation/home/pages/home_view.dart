@@ -1,28 +1,21 @@
 import 'dart:io';
 import 'dart:math';
-import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_persistent_keyboard_height/flutter_persistent_keyboard_height.dart';
 import 'package:keyboard_visibility_pro/keyboard_visibility_pro.dart';
 import 'package:slow/features/home/domain/message_model.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
-import 'package:slow/features/home/presentation/bloc/bloc/home_bloc.dart';
-import 'package:slow/features/home/presentation/widgets/add_files_strip.dart';
-import 'package:slow/features/home/presentation/widgets/background_image.dart';
-import 'package:slow/features/home/presentation/widgets/bottom_row/bottom_row.dart';
-import 'package:slow/features/home/presentation/widgets/emoji_picker_custom.dart';
-import 'package:slow/features/home/presentation/widgets/files_list.dart';
-import 'package:slow/features/home/presentation/widgets/bottom_row/list_drop_down.dart';
-import 'package:slow/features/home/presentation/widgets/message_container.dart';
-import 'package:slow/features/home/presentation/widgets/scroll_to_begin_button.dart';
-import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
-import 'package:slow/features/home/presentation/widgets/tags_list.dart';
-import 'package:slow/resources/resources.dart';
-import 'package:slow/themes/colors.dart';
-import 'package:slow/themes/text_style.dart';
+import 'package:slow/features/home/presentation/home/bloc/home_bloc.dart';
+import 'package:slow/features/home/presentation/home/widgets/add_files_strip.dart';
+import 'package:slow/features/home/presentation/home/widgets/background_image.dart';
+import 'package:slow/features/home/presentation/home/widgets/bottom_row/list_drop_down.dart';
+import 'package:slow/features/home/presentation/home/widgets/emoji_picker_custom.dart';
+import 'package:slow/features/home/presentation/home/widgets/message_container.dart';
+import 'package:slow/features/home/presentation/home/widgets/scroll_to_begin_button.dart';
+import 'package:slow/features/home/presentation/home/widgets/tags_list.dart';
+import 'package:slow/features/home/presentation/home/widgets/bottom_row/bottom_row.dart';
 
 class HomeView extends StatefulWidget {
   final Function(MessageModel message) addMessageEvent;

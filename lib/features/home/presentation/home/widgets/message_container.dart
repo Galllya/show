@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:slow/features/home/domain/message_model.dart';
-import 'package:slow/features/home/presentation/widgets/files_list.dart';
-import 'package:slow/features/home/presentation/widgets/tags_list.dart';
+import 'package:slow/features/home/presentation/home/widgets/files_list.dart';
+import 'package:slow/features/home/presentation/home/widgets/tags_list.dart';
 import 'package:slow/resources/resources.dart';
 import 'package:slow/themes/colors.dart';
 import 'package:slow/themes/text_style.dart';

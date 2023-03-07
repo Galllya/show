@@ -2,9 +2,9 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:slow/features/home/presentation/bloc/bloc/home_bloc.dart';
-import 'package:slow/features/home/presentation/pages/home_view.dart';
-import 'package:slow/features/home/presentation/widgets/drawer_custom.dart';
+import 'package:slow/features/home/presentation/home/bloc/home_bloc.dart';
+import 'package:slow/features/home/presentation/home/pages/home_view.dart';
+import 'package:slow/features/home/presentation/home/widgets/drawer_custom.dart';
 import 'package:slow/resources/resources.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,6 +50,14 @@ class _HomePageState extends State<HomePage> {
               );
             },
           ),
+          actions: [
+            IconButton(
+              onPressed: () {},
+              icon: const Icon(
+                Icons.search,
+              ),
+            ),
+          ],
         ),
         drawer: const DrawerCustom(),
         body: HomeView(

@@ -3,9 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:slow/features/home/domain/message_model.dart';
 import 'package:path/path.dart' as p;
-import 'package:slow/features/home/presentation/widgets/audio_player_custom.dart';
-import 'package:slow/features/home/presentation/widgets/gallery_custom.dart';
-import 'package:slow/features/home/presentation/widgets/video_player_custom.dart';
+import 'package:slow/features/home/presentation/home/widgets/audio_player_custom.dart';
+import 'package:slow/features/home/presentation/home/widgets/gallery_custom.dart';
+
+import 'video_player_custom.dart';
 
 class FilesList extends StatelessWidget {
   final MessageModel message;
