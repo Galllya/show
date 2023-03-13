@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_persistent_keyboard_height/flutter_persistent_keyboard_height.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
-import 'package:slow/features/home/presentation/home/widgets/tag_custom.dart';
+import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
 import 'package:slow/themes/colors.dart';
 import 'package:slow/themes/text_style.dart';
 

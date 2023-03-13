@@ -4,6 +4,7 @@ import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_persistent_keyboard_height/flutter_persistent_keyboard_height.dart';
 import 'package:keyboard_visibility_pro/keyboard_visibility_pro.dart';
 import 'package:slow/features/home/domain/message_model.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
@@ -12,10 +13,11 @@ import 'package:slow/features/home/presentation/home/widgets/add_files_strip.dar
 import 'package:slow/features/home/presentation/home/widgets/background_image.dart';
 import 'package:slow/features/home/presentation/home/widgets/bottom_row/list_drop_down.dart';
 import 'package:slow/features/home/presentation/home/widgets/emoji_picker_custom.dart';
-import 'package:slow/features/home/presentation/home/widgets/message_container.dart';
+import 'package:slow/features/home/presentation/widgets/message_container.dart';
 import 'package:slow/features/home/presentation/home/widgets/scroll_to_begin_button.dart';
 import 'package:slow/features/home/presentation/home/widgets/tags_list.dart';
 import 'package:slow/features/home/presentation/home/widgets/bottom_row/bottom_row.dart';
+import 'package:slow/themes/colors.dart';
 
 class HomeView extends StatefulWidget {
   final Function(MessageModel message) addMessageEvent;

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:slow/features/home/domain/tag_model.dart';
-import 'package:slow/features/home/presentation/home/widgets/tag_custom.dart';
+import 'package:slow/features/home/presentation/widgets/tag_custom.dart';
 
 class TagsList extends StatelessWidget {
   final List<TagModel> tags;
